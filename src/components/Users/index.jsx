@@ -2,7 +2,15 @@ import React from 'react';
 import { Skeleton } from './Skeleton';
 import { User } from './User';
 
-export const Users = ({ items, isLoading, searchValue, onChangeSearchValue }) => {
+export const Users = ({ 
+  items, 
+  isLoading, 
+  searchValue, 
+  onChangeSearchValue,
+  invites,
+  onClickInvite,
+  onSendInvite
+}) => {
   return (
     <>
       <div className="search">
@@ -18,15 +26,25 @@ export const Users = ({ items, isLoading, searchValue, onChangeSearchValue }) =>
       ) : (
         <ul className="users-list">
           {items.filter((obj) => {
-            const fullname = obj.first_name + ' ' + obj.last_name;
+            const fullname = (obj.first_name + ' ' + obj.last_name).toLowerCase();
 
-            return fullname.includes(searchValue) || obj.email.includes(searchValue);
+            return fullname.includes(searchValue.toLowerCase()) || obj.email.toLowerCase().includes(searchValue.toLowerCase());
           }).map((obj) => (
-            <User key={obj.id} {...obj} />
+            <User 
+              isInvited={invites.includes(obj.id)} 
+              onClickInvite={onClickInvite}
+              key={obj.id} {...obj}
+            />
           ))}
         </ul>
       )}
-      <button className="send-invite-btn">Отправить приглашение</button>
+      {
+        invites.length > 0 ? (
+          <button onClick={() => onSendInvite(true)} className="send-invite-btn">Отправить приглашение</button>
+        ) : (
+          <button onClick={() => alert("Вы не выбрали ни одного пользователя")} className="send-invite-btn">Отправить приглашение</button>
+        )
+      }
     </>
   );
 };
